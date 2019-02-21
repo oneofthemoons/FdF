@@ -1,0 +1,99 @@
+#include "fdf.h"
+
+void	ft_print_error(char* strerr)
+{
+	printf("%s", strerr); // deb to ft_putstr
+	exit(EXIT_FAILURE);
+}
+
+int ft_deal_key(int key, void *info)
+{
+	if (key == 53)
+		exit(0);
+	if (key == 1 && ((t_fdf*)info)->cur_pos.y < WIN_HEIGHT)
+		((t_fdf*)info)->cur_pos.y += PIXEL_RANGE;
+	else if (key == 2 && ((t_fdf*)info)->cur_pos.x < WIN_WIDTH)
+		((t_fdf*)info)->cur_pos.x += PIXEL_RANGE;
+	else if (key == 13 && ((t_fdf*)info)->cur_pos.y > 0)
+		((t_fdf*)info)->cur_pos.y -= PIXEL_RANGE;
+	else if (key == 0 && ((t_fdf*)info)->cur_pos.x > 0)
+		((t_fdf*)info)->cur_pos.x -= PIXEL_RANGE;
+	mlx_pixel_put(((t_fdf*)info)->mlx_ptr, ((t_fdf*)info)->win_ptr, ((t_fdf*)info)->cur_pos.x, ((t_fdf*)info)->cur_pos.y, 0xFFFFFF);
+	return (0);
+}
+
+void	ft_reset_pos(t_pos *pos)
+{
+	pos->x = 0;
+	pos->y = 0;
+	pos->z = 0;
+}
+
+int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
+{
+	int	width;
+
+	width = 0;
+	while (buff[*i] != '\n' && buff[*i] && *i < len)
+		if (buff[*i] >= '0' && buff[*i] <= '9')
+		{
+			++width;
+			while (buff[*i] >= '0' && buff[*i] <= '9' && *i < len)
+				++(*i);
+		}
+		else if (buff[*i] == ' ')
+			while (buff[*i] == ' ' && *i < len)
+				++(*i);
+		else if (buff[*i] != '\n' && buff[*i])
+		{
+			close(fd);
+			ft_print_error("error: bad map\n");
+		}
+	return (width);
+}
+
+void	ft_map_check(int argc, char **argv)
+{
+	int		fd;
+	char	buff[BUFF_SIZE];
+	int		width;
+	int		i;
+	int		len;
+
+	if (argc != 2)
+		ft_print_error("input error: bad argument count\n");
+	fd = open(argv[1], O_RDONLY);
+	if (read(fd, buff, 0) == -1)
+		ft_print_error("input error: file descriptor was closed\n");
+	width = -1;
+	while ((len = read(fd, buff, BUFF_SIZE)))
+	{
+		i = -1;
+		while (++i < len)
+			if (width == -1)
+				width = ft_width_in_num_rep(buff, fd, &i, len);
+			else if (width != ft_width_in_num_rep(buff, fd, &i, len))
+			{
+				close(fd);
+				ft_print_error("error: bad map\n");
+			}
+	}
+	close(fd);
+}
+
+int main(int argc, char **argv)
+{
+    void    *mlx_ptr;
+    void    *win_ptr;
+	t_fdf	info;
+
+	ft_map_check(argc, argv);
+	ft_reset_pos(&(info.cur_pos));
+    mlx_ptr = mlx_init();
+    win_ptr = mlx_new_window(mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
+	info.mlx_ptr = mlx_ptr;
+	info.win_ptr = win_ptr;
+    mlx_pixel_put(mlx_ptr, win_ptr, info.cur_pos.x, info.cur_pos.y, 0xFFFFFF);
+    mlx_key_hook(win_ptr, ft_deal_key, (void*)(&info));
+    mlx_loop(mlx_ptr);
+}
