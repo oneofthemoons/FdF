@@ -1,6 +1,6 @@
 NAME = fdf
 
-SRC = main.c
+SRC = main.c error.c map_control.c validate.c positions.c free.c
 
 OBJ = $(SRC:%.c=%.o)
 
@@ -10,7 +10,7 @@ $(NAME): $(OBJ)
 	gcc -L ./minilibx/ -lmlx -L ./libft/ -lft -framework OpenGL -framework AppKit -o $(NAME) $(OBJ)
 
 $(OBJ): $(SRC)
-	gcc -Wall -Wextra -Werror -I ./minilibx/ -I ./libft/ -c $(SRC)
+	gcc -Wall -Wextra -Werror -I ./libft/ -I ./minilibx/ -c $(SRC)
 
 clean:
 	rm -f $(OBJ) --no-print-directory
