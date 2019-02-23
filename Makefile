@@ -10,7 +10,7 @@ $(NAME): $(OBJ)
 	gcc -L ./minilibx/ -lmlx -L ./libft/ -lft -framework OpenGL -framework AppKit -o $(NAME) $(OBJ)
 
 $(OBJ): $(SRC)
-	gcc -Wall -Wextra -Werror -I ./minilibx/ -c $(SRC)
+	gcc -Wall -Wextra -Werror -I ./minilibx/ -I ./libft/ -c $(SRC)
 
 clean:
 	rm -f $(OBJ) --no-print-directory
