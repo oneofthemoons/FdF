@@ -26,7 +26,7 @@ int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
 		else if (buff[*i] == ' ')
 			while (buff[*i] == ' ' && *i < len)
 				++(*i);
-		else if (buff[*i] != '\n' && buff[*i])
+		else if (buff[*i] != '\n' && buff[*i] && buff[*i] != '-')
 		{
 			close(fd);
 			ft_print_error("error: bad map\n");
