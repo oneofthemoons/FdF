@@ -20,8 +20,14 @@ typedef struct  s_pos
 	int			x;
 	int			y;
 	int			z;
-	void		*ft_set_pos;
 }               t_pos;
+
+typedef struct  s_fpos
+{
+	float		x;
+	float		y;
+	float		z;
+}               t_fpos;
 
 typedef struct	s_map
 {
@@ -35,9 +41,7 @@ typedef struct	s_params
 	int			cell_range;
 	int			left;
 	int			top;
-	float		angle_x;
-	float		angle_y;
-	float		angle_z;
+	t_fpos		angle;
 }				t_params;
 
 typedef struct	s_fdf

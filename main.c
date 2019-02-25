@@ -183,15 +183,15 @@ void	ft_rotate_x(t_fdf *fdf, float delta_angle)
 	int	i;
 	int	j;
 
-	fdf->params.angle_x += delta_angle;
+	fdf->params.angle.x += delta_angle;
 	i = -1;
 	while (++i < fdf->c_map.height)
 	{
 		j = -1;
 		while (++j < fdf->c_map.width)
 		{
-			fdf->c_map.points[i][j].y = fdf->s_map.points[i][j].y * cos(fdf->params.angle_x) + fdf->c_map.points[i][j].z * sin(fdf->params.angle_x);
-			fdf->c_map.points[i][j].z = -(fdf->s_map.points[i][j].y) * sin(fdf->params.angle_x) + fdf->c_map.points[i][j].z * cos(fdf->params.angle_x);
+			fdf->c_map.points[i][j].y = fdf->s_map.points[i][j].y * cos(fdf->params.angle.x) + fdf->s_map.points[i][j].z * sin(fdf->params.angle.x);
+			fdf->c_map.points[i][j].z = -(fdf->s_map.points[i][j].y) * sin(fdf->params.angle.x) + fdf->s_map.points[i][j].z * cos(fdf->params.angle.x);
 		}
 	}
 }
@@ -201,18 +201,35 @@ void	ft_rotate_y(t_fdf *fdf, float delta_angle)
 	int	i;
 	int	j;
 
-	fdf->params.angle_y += delta_angle;
+	fdf->params.angle.y += delta_angle;
 	i = -1;
 	while (++i < fdf->c_map.height)
 	{
 		j = -1;
 		while (++j < fdf->c_map.width)
 		{
-			fdf->c_map.points[i][j].x = fdf->s_map.points[i][j].x * cos(fdf->params.angle_y) + fdf->c_map.points[i][j].z * sin(fdf->params.angle_y);
-			fdf->c_map.points[i][j].z = -(fdf->s_map.points[i][j].x) * sin(fdf->params.angle_y) + fdf->c_map.points[i][j].z * cos(fdf->params.angle_y);
+			fdf->c_map.points[i][j].x = fdf->s_map.points[i][j].x * cos(fdf->params.angle.y) + fdf->s_map.points[i][j].z * sin(fdf->params.angle.y);
+			fdf->c_map.points[i][j].z = -(fdf->s_map.points[i][j].x) * sin(fdf->params.angle.y) + fdf->s_map.points[i][j].z * cos(fdf->params.angle.y);
 		}
 	}
 }
+
+// void	ft_rotate_z(t_fdf *fdf, float delta_angle)
+// {
+// 	int	i;
+// 	int	j;
+
+// 	i = -1;
+// 	while (++i < fdf->c_map.height)
+// 	{
+// 		j = -1;
+// 		while (++j < fdf->c_map.width)
+// 		{
+// 			fdf->c_map.points[i][j].x = fdf->c_map.points[i][j].x * cos(delta_angle) - fdf->c_map.points[i][j].y * sin(delta_angle);
+// 			fdf->c_map.points[i][j].y = fdf->c_map.points[i][j].x * sin(delta_angle) + fdf->c_map.points[i][j].y * cos(delta_angle);
+// 		}
+// 	}
+// }
 
 int		ft_deal_key(int key, void *fdf)
 {
@@ -229,6 +246,11 @@ int		ft_deal_key(int key, void *fdf)
 		ft_rotate_y((t_fdf*)fdf, ANGLE);
 	if (key == 0)
 		ft_rotate_y((t_fdf*)fdf, -ANGLE);
+	// if (key == 14)
+	// 	ft_rotate_z((t_fdf*)fdf, ANGLE);
+	// if (key == 12)
+	// 	ft_rotate_z((t_fdf*)fdf, -ANGLE);
+	//printf("key: %d\n", key);
 	ft_draw_points((t_fdf*)fdf);
 	ft_draw_cells((t_fdf*)fdf);
 	return (0);
@@ -245,6 +267,7 @@ int		main(int argc, char **argv)
     fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
 	ft_calculate_params(&fdf);
 	ft_draw_points(&fdf);
+	ft_draw_cells(&fdf);
     mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));
     mlx_loop(fdf.mlx_ptr);
 }
