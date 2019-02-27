@@ -15,6 +15,14 @@
 
 #include <stdio.h> //deb
 
+typedef struct	s_walls
+{
+	int			top;
+	int			left;
+	int			down;
+	int			right;
+}				t_walls;
+
 typedef struct  s_pos
 {
 	int			x;
@@ -67,5 +75,7 @@ char	*ft_get_char_map(char *filename);
 void	ft_calculate_params(t_fdf *fdf);
 void	ft_copy_pos(const t_pos *from, t_pos *to);
 void	ft_swap_pos(t_pos *pos1, t_pos *pos2);
+void	ft_reset_fpos(t_fpos *pos);
+void	ft_init_walls(t_walls *walls);
 
 #endif

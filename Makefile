@@ -1,6 +1,6 @@
 NAME = fdf
 
-SRC = main.c error.c map_control.c validate.c positions.c free.c
+SRC = main.c error.c map_control.c validate.c positions.c free.c support.c
 
 OBJ = $(SRC:%.c=%.o)
 

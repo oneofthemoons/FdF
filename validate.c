@@ -11,30 +11,36 @@ int		ft_get_height(char *map)
 	return (height);
 }
 
+void	ft_bad_map(int fd)
+{
+	close(fd);
+	ft_print_error("error: bad map\n");
+}
+
 int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
 {
 	int	width;
 
 	width = 0;
 	while (buff[*i] != '\n' && buff[*i] && *i < len)
-		if (buff[*i] >= '0' && buff[*i] <= '9')
+	{
+		if (buff[*i] == '-')
+		{
+			if ((*i > 0 && buff[*i - 1] != ' ' && buff[*i - 1] != '\n') ||
+				buff[*i + 1] < '0' || buff[*i + 1] > '9')
+				ft_bad_map(fd);
+			++(*i);
+		}
+		else if (buff[*i] >= '0' && buff[*i] <= '9' && *i < len)
 		{
 			++width;
 			while (buff[*i] >= '0' && buff[*i] <= '9' && *i < len)
 				++(*i);
 		}
-		else if (buff[*i] == ' ')
-			while (buff[*i] == ' ' && *i < len)
-				++(*i);
-		else if (buff[*i] != '\n' && buff[*i] && buff[*i] != '-')
-		{
-			close(fd);
-			ft_print_error("error: bad map\n");
-		}
-	if (buff[len - 1] != '\n')
-	{
-		close(fd);
-		ft_print_error("error: bad map\n");
+		else if (buff[*i] != ' ' && buff[*i] != '\n' && buff[*i])
+			ft_bad_map(fd);
+		while (buff[*i] == ' ' && *i < len)
+			++(*i);
 	}
 	return (width);
 }
@@ -60,10 +66,7 @@ int		ft_map_check(int argc, char **argv)
 			if (width == -1)
 				width = ft_width_in_num_rep(buff, fd, &i, len);
 			else if (width != ft_width_in_num_rep(buff, fd, &i, len))
-			{
-				close(fd);
-				ft_print_error("error: bad map\n");
-			}
+				ft_bad_map(fd);
 	}
 	close(fd);
 	return (width);
