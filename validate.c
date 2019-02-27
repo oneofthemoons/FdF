@@ -11,8 +11,9 @@ int		ft_get_height(char *map)
 	return (height);
 }
 
-void	ft_bad_map(int fd)
+void	ft_bad_map(int fd, char *c_map)
 {
+	free(c_map);
 	close(fd);
 	ft_print_error("error: bad map\n");
 }
@@ -28,7 +29,7 @@ int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
 		{
 			if ((*i > 0 && buff[*i - 1] != ' ' && buff[*i - 1] != '\n') ||
 				buff[*i + 1] < '0' || buff[*i + 1] > '9')
-				ft_bad_map(fd);
+				ft_bad_map(fd, buff);
 			++(*i);
 		}
 		else if (buff[*i] >= '0' && buff[*i] <= '9' && *i < len)
@@ -38,41 +39,32 @@ int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
 				++(*i);
 		}
 		else if (buff[*i] != ' ' && buff[*i] != '\n' && buff[*i])
-			ft_bad_map(fd);
+			ft_bad_map(fd, buff);
 		while (buff[*i] == ' ' && *i < len)
 			++(*i);
 	}
 	return (width);
 }
 
-int		ft_map_check(int argc, char **argv)
+int		ft_map_check(char *c_map, int fd)
 {
-	int		fd;
-	char	buff[BUFF_FDF];
 	int		width;
 	int		i;
 	int		len;
 
-	if (argc != 2)
-		ft_print_error("input error: bad argument count\n");
-	fd = open(argv[1], O_RDONLY);
-	if (read(fd, buff, 0) == -1)
-		ft_print_error("input error: file descriptor was closed\n");
 	width = -1;
-	while ((len = read(fd, buff, BUFF_FDF)))
-	{
-		i = -1;
-		while (++i < len)
-			if (width == -1)
-				width = ft_width_in_num_rep(buff, fd, &i, len);
-			else if (width != ft_width_in_num_rep(buff, fd, &i, len))
-				ft_bad_map(fd);
-	}
+	len = ft_strlen(c_map);
+	i = -1;
+	while (++i < len)
+		if (width == -1)
+			width = ft_width_in_num_rep(c_map, fd, &i, len);
+		else if (width != ft_width_in_num_rep(c_map, fd, &i, len))
+			ft_bad_map(fd, c_map);
 	close(fd);
 	return (width);
 }
 
-char	*ft_get_char_map(char *filename)
+char	*ft_get_char_map(int argc, char **argv, t_fdf *fdf)
 {
 	int		fd;
 	char	*c_map;
@@ -80,8 +72,12 @@ char	*ft_get_char_map(char *filename)
 	char	buff[BUFF_FDF + 1];
 	int		len;
 
+	if (argc != 2)
+		ft_print_error("input error: bad argument count\n");
+	fd = open(argv[1], O_RDONLY);
+	if (read(fd, buff, 0) == -1)
+		ft_print_error("input error: file descriptor was closed\n");
 	c_map = ft_strdup("");
-	fd = open(filename, O_RDONLY);
 	while ((len = read(fd, buff, BUFF_FDF)))
 	{
 		buff[len] = '\0';
@@ -89,6 +85,7 @@ char	*ft_get_char_map(char *filename)
 		c_map = ft_strjoin(c_map, buff);
 		free(t);
 	}
+	fdf->s_map.width = ft_map_check(c_map, fd);
 	return (c_map);
 	close(fd);
 }

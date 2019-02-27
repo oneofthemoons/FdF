@@ -286,6 +286,7 @@ void	ft_central(t_fdf *fdf)
 
 int		ft_deal_key(int key, void *fdf)
 {
+	//printf("key: %d\n", key);
 	if (key == 53)
 		exit(0);
 	mlx_clear_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr);
@@ -303,9 +304,12 @@ int		ft_deal_key(int key, void *fdf)
 		((t_fdf*)fdf)->params.angle.z += ANGLE;
 	if (key == 12)
 		((t_fdf*)fdf)->params.angle.z -= ANGLE;
-	printf("key: %d\n", key);
+	if (key == 126)
+		ft_recalculate_points((t_fdf*)fdf, INCREASE);
+	if (key == 125)
+		ft_recalculate_points((t_fdf*)fdf, REDUCE);
 	if (key == 13 || key == 1 || key == 2 || key == 0 || key == 15
-		|| key == 12 || key == 14)
+		|| key == 12 || key == 14 || key == 125 || key == 126)
 	{
 		ft_reset_current_map((t_fdf*)fdf);
 		ft_rotate_x((t_fdf*)fdf);

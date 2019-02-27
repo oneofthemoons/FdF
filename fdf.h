@@ -4,7 +4,9 @@
 # define WIN_WIDTH 1280
 # define PIXEL_RANGE 1
 # define BUFF_FDF 4096
-# define ANGLE 0.01
+# define ANGLE 0.05
+# define REDUCE -1
+# define INCREASE 1
 # include <mlx.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -70,12 +72,13 @@ void	ft_set_pos(t_pos *pos, int x, int y, int z);
 void	ft_reset_pos(t_pos *pos);
 void	ft_free_string_arr(char **arr);
 void	ft_free_map(t_map *map);
-int		ft_map_check(int argc, char **argv);
-char	*ft_get_char_map(char *filename);
+char	*ft_get_char_map(int argc, char **argv, t_fdf *fdf);
 void	ft_calculate_params(t_fdf *fdf);
 void	ft_copy_pos(const t_pos *from, t_pos *to);
 void	ft_swap_pos(t_pos *pos1, t_pos *pos2);
 void	ft_reset_fpos(t_fpos *pos);
 void	ft_init_walls(t_walls *walls);
+void	ft_central(t_fdf *fdf);
+void	ft_recalculate_points(t_fdf *fdf, int action);
 
 #endif
