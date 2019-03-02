@@ -39,6 +39,12 @@ typedef struct  s_fpos
 	float		z;
 }               t_fpos;
 
+typedef struct	s_pos2
+{
+	int			x;
+	int			y;
+}				t_pos2;
+
 typedef struct	s_map
 {
 	t_pos		**points;

@@ -19,8 +19,6 @@
 // 	}
 // }
 
-// delta.z == delta_error
-
 void	ft_init_drawer(t_pos *from, t_pos *to, t_pos *delta, int *error)
 {
 	if (from->x > to->x)
@@ -41,91 +39,35 @@ void	ft_init_direction(int *dir_y, t_pos *to, t_pos *from, t_pos *cur)
 	ft_copy_pos(from, cur);
 }
 
-// deprecated
-// void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
-// {
-// 	t_pos	delta;
-// 	int		error;
-// 	t_pos	cur;
-// 	int		dir_y;
-
-// 	ft_init_drawer(&from, &to, &delta, &error);
-// 	ft_init_direction(&dir_y, &to, &from, &cur);
-// 	if (cur.x == to.x)
-// 	{
-// 		if (dir_y == -1)
-// 			ft_swap_pos(&cur, &to);
-// 		while (cur.y <= to.y)
-// 			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, cur.x, cur.y++, 0xFFFFFF);
-// 		return ;
-// 	}
-// 	while (cur.x <= to.x)
-// 	{
-// 		mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, cur.x++, cur.y, 0xFFFFFF);
-// 		error += delta.z;
-// 		if (error * 2 >= delta.x)
-// 		{
-// 			cur.y += dir_y;
-// 			error -= delta.x;
-// 		}
-// 	}
-// }
-
 void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
 {
-	int	a;
-	int	b;
-	int	sign;
-	int	sign_a;
-	int	sign_b;
+	t_pos2	d;
+	t_pos2	sign_d;
 	int	f;
-	int	x;
-	int	y;
+	int	sign;
 
-	x = from.x;
-	y = from.y;
-	a = to.y - from.y;
-	b = from.x - to.x;
-	if (abs(a) > abs(b))
-		sign = 1;
-	else
-		sign = -1;
-	if (a < 0)
-		sign_a = -1;
-	else
-		sign_a = 1;
-	if (b < 0)
-		sign_b = -1;
-	else
-		sign_b = 1;
+	d.y = to.y - from.y;
+	d.x = from.x - to.x;
+	sign_d.y = d.y < 0 ? -1 : 1;
+	sign_d.x = d.x < 0 ? -1 : 1;
 	f = 0;
-	if (sign == -1)
+	sign = abs(d.y) <= abs(d.x);
+	while (from.x != to.x || from.y != to.y)
 	{
-		while (x != to.x || y != to.y)
+		f += sign ? d.y * sign_d.y : d.x * sign_d.x;
+		if (f > 0)
 		{
-			f += a * sign_a;
-			if (f > 0)
-			{
-				f -= b * sign_b;
-				y += sign_a;
-			}
-			x -= sign_b;
-			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x, y, 0xFFFFFF);
+			f -= sign ? d.x * sign_d.x : d.y * sign_d.y;
+			if (sign)
+				from.y += sign_d.y;
+			else
+				from.x -= sign_d.x;
 		}
-	}
-	else
-	{
-		while (x != to.x || y != to.y)
-		{
-			f += b * sign_b;
-			if (f > 0)
-			{
-				f -= a * sign_a;
-				x -= sign_b;
-			}
-			y += sign_a;
-			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, x, y, 0xFFFFFF);
-		}
+		if (sign)
+			from.x -= sign_d.x;
+		else
+			from.y += sign_d.y;
+		mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, from.x, from.y, 0xFFFFFF);
 	}
 }
 
