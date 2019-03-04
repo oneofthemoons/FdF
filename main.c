@@ -39,6 +39,31 @@ void	ft_init_direction(int *dir_y, t_pos *to, t_pos *from, t_pos *cur)
 	ft_copy_pos(from, cur);
 }
 
+void	ft_delta_render(t_pos2 *d, t_pos2 *sign_d, t_pos *from, t_pos *to)
+{
+	int	sign;
+	int	f;
+
+	f = 0;
+	sign = abs(d->y) <= abs(d->x);
+	while (from->x != to->x || from->y != to->y)
+	{
+		f += sign ? d->y * sign_d->y : d->x * sign_d->x;
+		if (f > 0)
+		{
+			f -= sign ? d->x * sign_d->x : d->y * sign_d->y;
+			if (sign)
+				from->y += sign_d->y;
+			else
+				from->x -= sign_d->x;
+		}
+		if (sign)
+			from->x -= sign_d->x;
+		else
+			from->y += sign_d->y;
+	}
+}
+
 void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
 {
 	t_pos2	d;
@@ -273,10 +298,10 @@ int		main(int argc, char **argv)
 	fdf.c_map.points = NULL;
 	ft_create_maps(&fdf, argc, argv);
 	ft_reset_current_map(&fdf);
-	ft_central(&fdf);
     fdf.mlx_ptr = mlx_init();
     fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
 	ft_calculate_params(&fdf);
+	ft_central(&fdf);
 	ft_draw_points(&fdf);
 	ft_draw_cells(&fdf);
     mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));

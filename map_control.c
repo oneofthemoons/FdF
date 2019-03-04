@@ -25,7 +25,6 @@ void	ft_reset_current_map(t_fdf *fdf)
 			ft_set_pos(&(fdf->c_map.points[i][j]), fdf->s_map.points[i][j].x,
 				fdf->s_map.points[i][j].y, fdf->s_map.points[i][j].z);
 	}
-	// ft_central(fdf);
 }
 
 void	ft_create_maps(t_fdf *fdf, int argc, char **argv)
@@ -39,10 +38,12 @@ void	ft_recalculate_points(t_fdf *fdf, int action)
 	int	i;
 	int	j;
 
-	if (fdf->params.cell_range < 4)
-		fdf->params.cell_range = 4;
+	if (fdf->params.cell_range < 6)
+		fdf->params.cell_range = 6;
 	if (fdf->params.cell_range > WIN_WIDTH / 2)
 		fdf->params.cell_range = WIN_WIDTH / 2;
+	if ((fdf->params.cell_range == 6 && action == REDUCE) || (fdf->params.cell_range == WIN_WIDTH / 2 && action == INCREASE))
+		return ;
 	i = -1;
 	while (++i < fdf->s_map.height)
 	{
