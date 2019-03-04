@@ -25,7 +25,7 @@ void	ft_reset_current_map(t_fdf *fdf)
 			ft_set_pos(&(fdf->c_map.points[i][j]), fdf->s_map.points[i][j].x,
 				fdf->s_map.points[i][j].y, fdf->s_map.points[i][j].z);
 	}
-	//ft_central(fdf);
+	// ft_central(fdf);
 }
 
 void	ft_create_maps(t_fdf *fdf, int argc, char **argv)

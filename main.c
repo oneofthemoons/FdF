@@ -168,6 +168,7 @@ void	ft_rotate_z(t_fdf *fdf)
 	int		j;
 	float	cs;
 	float	sn;
+	int		x;
 
 	i = -1;
 	cs = cos(fdf->params.angle.z);
@@ -177,8 +178,9 @@ void	ft_rotate_z(t_fdf *fdf)
 		j = -1;
 		while (++j < fdf->c_map.width)
 		{
+			x = fdf->c_map.points[i][j].x;
 			fdf->c_map.points[i][j].x = fdf->c_map.points[i][j].x * cs - fdf->c_map.points[i][j].y * sn;
-			fdf->c_map.points[i][j].y = fdf->c_map.points[i][j].x * sn + fdf->c_map.points[i][j].y * cs;
+			fdf->c_map.points[i][j].y = x * sn + fdf->c_map.points[i][j].y * cs;
 		}
 	}
 }
@@ -271,6 +273,7 @@ int		main(int argc, char **argv)
 	fdf.c_map.points = NULL;
 	ft_create_maps(&fdf, argc, argv);
 	ft_reset_current_map(&fdf);
+	ft_central(&fdf);
     fdf.mlx_ptr = mlx_init();
     fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
 	ft_calculate_params(&fdf);
