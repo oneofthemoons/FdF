@@ -7,6 +7,9 @@
 # define ANGLE 0.05
 # define REDUCE -1
 # define INCREASE 1
+# define GREEN 0x008000
+# define BROWN 0x964b00
+# define WHITE 0xFFFFFF
 # include <mlx.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -57,6 +60,9 @@ typedef struct	s_params
 	int			cell_range;
 	int			left;
 	int			top;
+	int			peak_height;
+	int			middle_height;
+	int			bottom_height;
 	t_fpos		angle;
 }				t_params;
 
@@ -68,6 +74,13 @@ typedef struct	s_fdf
 	t_map		c_map;
 	t_params	params;
 }				t_fdf;
+
+typedef struct	s_line_color
+{
+	t_pos2		idx_from;
+	t_pos2		idx_to;
+}				t_line_color;
+
 
 
 void	ft_print_error(char* strerr);

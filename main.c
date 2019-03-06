@@ -64,35 +64,78 @@ void	ft_delta_render(t_pos2 *d, t_pos2 *sign_d, t_pos *from, t_pos *to)
 	}
 }
 
-void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
+int		ft_get_point_color(t_fdf *fdf, int height)
+{
+	int		color;
+	int		delta;
+	int		*c_ptr;
+
+	c_ptr = &color;
+	if (height < fdf->params.middle_height)
+	{
+		delta = fdf->params.middle_height - fdf->params.bottom_height; 
+		if (!delta || height == fdf->params.bottom_height)
+			return (GREEN);
+		color = 0;
+		((char*)c_ptr)[1] = (char)(0x80 - (height * (0x80 - 0x4b)) / (delta));
+		((char*)c_ptr)[2] = (char)(0x00 + (height * (0x96 - 0x00)) / (delta));
+		return (color);
+	}
+	delta = fdf->params.peak_height - fdf->params.middle_height;
+	if (!delta)
+		return (WHITE);
+	color = 0;
+	((char*)c_ptr)[0] = (char)(0x00 + ((height - fdf->params.middle_height) * (0xFF - 0x00)) / (delta));
+	((char*)c_ptr)[1] = (char)(0x4b + ((height - fdf->params.middle_height) * (0xFF - 0x4b)) / (delta));
+	((char*)c_ptr)[2] = (char)(0x96 + ((height - fdf->params.middle_height) * (0xFF - 0x96)) / (delta));
+	return (color);
+}
+
+int		ft_get_line_color(t_fdf *fdf, t_line_color color, int d_current, int delta)
+{
+	int	height;
+
+	if (!delta)
+		return (0);
+	height = ((fdf->s_map.points[color.idx_to.y][color.idx_to.x].z -
+		fdf->s_map.points[color.idx_from.y][color.idx_from.x].z) * d_current) / delta +
+		fdf->s_map.points[color.idx_from.y][color.idx_from.x].z;
+	return (ft_get_point_color(fdf, height));
+}
+
+void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to, t_line_color color)
 {
 	t_pos2	d;
 	t_pos2	sign_d;
+	t_pos2	current;
 	int	f;
 	int	sign;
 
+	current.x = from.x;
+	current.y = from.y;
 	d.y = to.y - from.y;
 	d.x = from.x - to.x;
 	sign_d.y = d.y < 0 ? -1 : 1;
 	sign_d.x = d.x < 0 ? -1 : 1;
 	f = 0;
 	sign = abs(d.y) <= abs(d.x);
-	while (from.x != to.x || from.y != to.y)
+	while (current.x != to.x || current.y != to.y)
 	{
 		f += sign ? d.y * sign_d.y : d.x * sign_d.x;
 		if (f > 0)
 		{
 			f -= sign ? d.x * sign_d.x : d.y * sign_d.y;
 			if (sign)
-				from.y += sign_d.y;
+				current.y += sign_d.y;
 			else
-				from.x -= sign_d.x;
+				current.x -= sign_d.x;
 		}
 		if (sign)
-			from.x -= sign_d.x;
+			current.x -= sign_d.x;
 		else
-			from.y += sign_d.y;
-		mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, from.x, from.y, 0xFFFFFF);
+			current.y += sign_d.y;
+		mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, current.x, current.y,
+			ft_get_line_color(fdf, color, sign ? current.x - from.x : current.y - from.y, sign ? abs(d.x) : abs(d.y)));
 	}
 }
 
@@ -110,16 +153,17 @@ void	ft_draw_points(t_fdf *fdf)
 		{
 			pos.x = fdf->c_map.points[i][j].x;
 			pos.y = fdf->c_map.points[i][j].y;
-			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, pos.x, pos.y, 0xFFFFFF);
+			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, pos.x, pos.y, ft_get_point_color(fdf, fdf->s_map.points[i][j].z));
 		}
 	}
 }
 
 void	ft_draw_cells(t_fdf *fdf)
 {
-	t_pos	iter;
-	t_pos	from;
-	t_pos	to;
+	t_pos2			iter;
+	t_pos			from;
+	t_pos			to;
+	t_line_color	color;
 
 	iter.y = -1;
 	while (++(iter.y) < fdf->c_map.height)
@@ -133,13 +177,19 @@ void	ft_draw_cells(t_fdf *fdf)
 			{
 				to.x = fdf->c_map.points[iter.y + 1][iter.x].x;
 				to.y = fdf->c_map.points[iter.y + 1][iter.x].y;
-				ft_draw_line(fdf, from, to);
+				color.idx_from = iter;
+				color.idx_to.x = iter.x;
+				color.idx_to.y = iter.y + 1;
+				ft_draw_line(fdf, from, to, color);
 			}
 			if (iter.x < fdf->c_map.width - 1)
 			{
 				to.x = fdf->c_map.points[iter.y][iter.x + 1].x;
 				to.y = fdf->c_map.points[iter.y][iter.x + 1].y;
-				ft_draw_line(fdf, from, to);
+				color.idx_from = iter;
+				color.idx_to.x = iter.x + 1;
+				color.idx_to.y = iter.y;
+				ft_draw_line(fdf, from, to, color);
 			}
 		}
 	}
