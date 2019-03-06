@@ -72,6 +72,7 @@ typedef struct	s_fdf
 	void		*win_ptr;
 	t_map		s_map;
 	t_map		c_map;
+	t_map		h_map;
 	t_params	params;
 }				t_fdf;
 
@@ -99,5 +100,6 @@ void	ft_reset_fpos(t_fpos *pos);
 void	ft_init_walls(t_walls *walls);
 void	ft_central(t_fdf *fdf);
 void	ft_recalculate_points(t_fdf *fdf, int action);
+void	ft_init_h_map(t_fdf *fdf);
 
 #endif

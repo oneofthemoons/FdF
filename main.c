@@ -19,6 +19,13 @@
 // 	}
 // }
 
+int ft_close(void *param)
+{
+	(void)param;
+	exit(0);
+	return (0);
+}
+
 void	ft_init_drawer(t_pos *from, t_pos *to, t_pos *delta, int *error)
 {
 	if (from->x > to->x)
@@ -97,9 +104,9 @@ int		ft_get_line_color(t_fdf *fdf, t_line_color color, int d_current, int delta)
 
 	if (!delta)
 		return (0);
-	height = ((fdf->s_map.points[color.idx_to.y][color.idx_to.x].z -
-		fdf->s_map.points[color.idx_from.y][color.idx_from.x].z) * d_current) / delta +
-		fdf->s_map.points[color.idx_from.y][color.idx_from.x].z;
+	height = ((fdf->h_map.points[color.idx_to.y][color.idx_to.x].z -
+		fdf->h_map.points[color.idx_from.y][color.idx_from.x].z) * d_current) / delta +
+		fdf->h_map.points[color.idx_from.y][color.idx_from.x].z;
 	return (ft_get_point_color(fdf, height));
 }
 
@@ -153,7 +160,7 @@ void	ft_draw_points(t_fdf *fdf)
 		{
 			pos.x = fdf->c_map.points[i][j].x;
 			pos.y = fdf->c_map.points[i][j].y;
-			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, pos.x, pos.y, ft_get_point_color(fdf, fdf->s_map.points[i][j].z));
+			mlx_pixel_put(fdf->mlx_ptr, fdf->win_ptr, pos.x, pos.y, ft_get_point_color(fdf, fdf->h_map.points[i][j].z));
 		}
 	}
 }
@@ -338,6 +345,7 @@ int		ft_deal_key(int key, void *fdf)
 	}
 	ft_draw_points((t_fdf*)fdf);
 	ft_draw_cells((t_fdf*)fdf);
+	printf("peak: %d, middle: %d, bottom: %d\n", ((t_fdf*)fdf)->params.peak_height, ((t_fdf*)fdf)->params.middle_height, ((t_fdf*)fdf)->params.bottom_height);
 	return (0);
 }
 
@@ -348,6 +356,7 @@ int		main(int argc, char **argv)
 	fdf.c_map.points = NULL;
 	ft_create_maps(&fdf, argc, argv);
 	ft_reset_current_map(&fdf);
+	ft_init_h_map(&fdf);
     fdf.mlx_ptr = mlx_init();
     fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
 	ft_calculate_params(&fdf);
@@ -355,5 +364,6 @@ int		main(int argc, char **argv)
 	ft_draw_points(&fdf);
 	ft_draw_cells(&fdf);
     mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));
+	mlx_hook(fdf.win_ptr, 17, 0, ft_close, NULL);
     mlx_loop(fdf.mlx_ptr);
 }
