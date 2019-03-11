@@ -20,86 +20,90 @@
 
 #include <stdio.h> //deb
 
-typedef struct	s_walls
+typedef unsigned char	u_ch;
+
+typedef struct			s_walls
 {
-	int			top;
-	int			left;
-	int			down;
-	int			right;
-}				t_walls;
+	int					top;
+	int					left;
+	int					down;
+	int					right;
+}						t_walls;
 
-typedef struct  s_pos
+typedef struct  		s_pos
 {
-	int			x;
-	int			y;
-	int			z;
-}               t_pos;
+	int					x;
+	int					y;
+	int					z;
+	int					color;
+}       		        t_pos;
 
-typedef struct  s_fpos
+typedef struct			s_fpos
 {
-	float		x;
-	float		y;
-	float		z;
-}               t_fpos;
+	float				x;
+	float				y;
+	float				z;
+}						t_fpos;
 
-typedef struct	s_pos2
+typedef struct			s_pos2
 {
-	int			x;
-	int			y;
-}				t_pos2;
+	int					x;
+	int					y;
+}						t_pos2;
 
-typedef struct	s_map
+typedef struct			s_map
 {
-	t_pos		**points;
-	int			width;
-	int			height;
-}				t_map;
+	t_pos				**points;
+	int					width;
+	int					height;
+}						t_map;
 
-typedef struct	s_params
+typedef struct			s_params
 {
-	int			cell_range;
-	int			left;
-	int			top;
-	int			peak_height;
-	int			middle_height;
-	int			bottom_height;
-	t_fpos		angle;
-}				t_params;
+	int					cell_range;
+	int					left;
+	int					top;
+	int					peak_height;
+	int					middle_height;
+	int					bottom_height;
+	t_fpos				angle;
+}						t_params;
 
-typedef struct	s_fdf
+typedef struct			s_fdf
 {
-	void		*mlx_ptr;
-	void		*win_ptr;
-	t_map		s_map;
-	t_map		c_map;
-	t_map		h_map;
-	t_params	params;
-}				t_fdf;
+	void				*mlx_ptr;
+	void				*win_ptr;
+	t_map				s_map;
+	t_map				c_map;
+	t_map				h_map;
+	t_params			params;
+}						t_fdf;
 
-typedef struct	s_line_color
+typedef struct			s_line_color
 {
-	t_pos2		idx_from;
-	t_pos2		idx_to;
-}				t_line_color;
+	t_pos2				idx_from;
+	t_pos2				idx_to;
+}						t_line_color;
 
-
-
-void	ft_print_error(char* strerr);
-void	ft_reset_current_map(t_fdf *fdf);
-void	ft_create_maps(t_fdf *fdf, int argc, char **argv);
-void	ft_include_int_map(char* c_map, t_map *map);
-void	ft_set_pos(t_pos *pos, int x, int y, int z);
-void	ft_reset_pos(t_pos *pos);
-void	ft_free_string_arr(char **arr);
-void	ft_free_map(t_map *map);
-char	*ft_get_char_map(int argc, char **argv, t_fdf *fdf);
-void	ft_calculate_params(t_fdf *fdf);
-void	ft_copy_pos(const t_pos *from, t_pos *to);
-void	ft_swap_pos(t_pos *pos1, t_pos *pos2);
-void	ft_reset_fpos(t_fpos *pos);
-void	ft_init_walls(t_walls *walls);
-void	ft_central(t_fdf *fdf);
-void	ft_recalculate_points(t_fdf *fdf, int action);
-void	ft_init_h_map(t_fdf *fdf);
+void					ft_print_error(char* strerr);
+void					ft_reset_current_map(t_fdf *fdf);
+void					ft_create_maps(t_fdf *fdf, int argc, char **argv);
+void					ft_include_int_map(char* c_map, t_map *map);
+void					ft_set_pos(t_pos *pos, int x, int y, int z);
+void					ft_reset_pos(t_pos *pos);
+void					ft_free_string_arr(char **arr);
+void					ft_free_map(t_map *map);
+char					*ft_get_char_map(int argc, char **argv, t_fdf *fdf);
+void					ft_calculate_params(t_fdf *fdf);
+void					ft_copy_pos(const t_pos *from, t_pos *to);
+void					ft_swap_pos(t_pos *pos1, t_pos *pos2);
+void					ft_reset_fpos(t_fpos *pos);
+void					ft_init_walls(t_walls *walls);
+void					ft_central(t_fdf *fdf);
+void					ft_recalculate_points(t_fdf *fdf, int action);
+void					ft_init_h_map(t_fdf *fdf);
+int						ft_max(int a, int b);
+int						ft_min(int a, int b);
+int						ft_abs_ch(char a);
 
 #endif
