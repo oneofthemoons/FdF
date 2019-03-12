@@ -89,7 +89,7 @@ void	ft_calculate_params(t_fdf *fdf)
 	int	i;
 	int	j;
 
-	fdf->params.cell_range = (WIN_WIDTH - fdf->params.left * 2) / fdf->s_map.width;
+	fdf->params.cell_range = (WIN_WIDTH * 90 / 100) / fdf->s_map.width;
 	fdf->params.left = -(fdf->s_map.width * fdf->params.cell_range) / 2;
 	fdf->params.top = -(fdf->s_map.height * fdf->params.cell_range) / 2;
 	fdf->params.peak_height = fdf->h_map.points[0][0].z;
