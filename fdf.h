@@ -69,6 +69,16 @@ typedef struct			s_params
 	t_fpos				angle;
 }						t_params;
 
+typedef struct			s_image
+{
+	void				*ptr;
+	char				*str;
+	int					bpp;
+	int					size_line;
+	int					endian;
+}						t_image;
+
+
 typedef struct			s_fdf
 {
 	void				*mlx_ptr;
@@ -77,6 +87,7 @@ typedef struct			s_fdf
 	t_map				c_map;
 	t_map				h_map;
 	t_params			params;
+	t_image				img;
 }						t_fdf;
 
 typedef struct			s_line_color
