@@ -54,11 +54,11 @@ void	ft_recalculate_points(t_fdf *fdf, int action)
 	int	i;
 	int	j;
 
-	if (fdf->params.cell_range < 6)
-		fdf->params.cell_range = 6;
+	if (fdf->params.cell_range < 3)
+		fdf->params.cell_range = 3;
 	if (fdf->params.cell_range > WIN_WIDTH / 2)
 		fdf->params.cell_range = WIN_WIDTH / 2;
-	if ((fdf->params.cell_range == 6 && action == REDUCE) || (fdf->params.cell_range == WIN_WIDTH / 2 && action == INCREASE))
+	if ((fdf->params.cell_range == 3 && action == REDUCE) || (fdf->params.cell_range == WIN_WIDTH / 2 && action == INCREASE))
 		return ;
 	i = -1;
 	while (++i < fdf->s_map.height)

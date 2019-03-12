@@ -90,20 +90,15 @@ void					ft_reset_current_map(t_fdf *fdf);
 void					ft_create_maps(t_fdf *fdf, int argc, char **argv);
 void					ft_include_int_map(char* c_map, t_map *map);
 void					ft_set_pos(t_pos *pos, int x, int y, int z);
-void					ft_reset_pos(t_pos *pos);
 void					ft_free_string_arr(char **arr);
 void					ft_free_map(t_map *map);
 char					*ft_get_char_map(int argc, char **argv, t_fdf *fdf);
 void					ft_calculate_params(t_fdf *fdf);
-void					ft_copy_pos(const t_pos *from, t_pos *to);
-void					ft_swap_pos(t_pos *pos1, t_pos *pos2);
 void					ft_reset_fpos(t_fpos *pos);
 void					ft_init_walls(t_walls *walls);
 void					ft_central(t_fdf *fdf);
 void					ft_recalculate_points(t_fdf *fdf, int action);
 void					ft_init_h_map(t_fdf *fdf);
 int						ft_max(int a, int b);
-int						ft_min(int a, int b);
-int						ft_abs_ch(char a);
 
 #endif

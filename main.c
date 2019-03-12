@@ -26,51 +26,6 @@ int ft_close(void *param)
 	return (0);
 }
 
-void	ft_init_drawer(t_pos *from, t_pos *to, t_pos *delta, int *error)
-{
-	if (from->x > to->x)
-		ft_swap_pos(from, to);
-	delta->x = abs(to->x - from->x);
-	delta->y = abs(to->y - from->y);
-	*error = 0;
-	delta->z = delta->y;
-}
-
-void	ft_init_direction(int *dir_y, t_pos *to, t_pos *from, t_pos *cur)
-{
-	*dir_y = to->y - from->y;
-	if (*dir_y > 0)
-		*dir_y = 1;
-	else if (*dir_y < 0)
-		*dir_y = -1;
-	ft_copy_pos(from, cur);
-}
-
-void	ft_delta_render(t_pos2 *d, t_pos2 *sign_d, t_pos *from, t_pos *to)
-{
-	int	sign;
-	int	f;
-
-	f = 0;
-	sign = abs(d->y) <= abs(d->x);
-	while (from->x != to->x || from->y != to->y)
-	{
-		f += sign ? d->y * sign_d->y : d->x * sign_d->x;
-		if (f > 0)
-		{
-			f -= sign ? d->x * sign_d->x : d->y * sign_d->y;
-			if (sign)
-				from->y += sign_d->y;
-			else
-				from->x -= sign_d->x;
-		}
-		if (sign)
-			from->x -= sign_d->x;
-		else
-			from->y += sign_d->y;
-	}
-}
-
 int		ft_get_point_color(t_fdf *fdf, int height)
 {
 	int		color;
