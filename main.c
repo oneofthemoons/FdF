@@ -148,7 +148,9 @@ void	ft_draw_points(t_fdf *fdf)
 		{
 			pos.x = fdf->c_map.points[i][j].x;
 			pos.y = fdf->c_map.points[i][j].y;
-			fdf->c_map.points[i][j].color = ft_get_point_color(fdf, fdf->h_map.points[i][j].z);
+			fdf->c_map.points[i][j].color = fdf->c_map.points[i][j].src_color == -1 ?
+				ft_get_point_color(fdf, fdf->h_map.points[i][j].z) :
+				fdf->c_map.points[i][j].src_color;
 			ft_put_pixel(fdf, pos.x, pos.y, fdf->c_map.points[i][j].color);
 		}
 	}

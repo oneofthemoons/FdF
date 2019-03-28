@@ -18,6 +18,23 @@ void	ft_bad_map(int fd, char *c_map)
 	ft_print_error("error: bad map\n");
 }
 
+void	ft_bad_int_map(int height, t_map *map)
+{
+	while (height--)
+		free(map->points[height]);
+	free(map->points);
+	ft_print_error("error: bad map\n");
+}
+
+int		ft_allowed_char(char c)
+{
+	if ((c >= '0' && c <= '9') ||
+		(c >= 'A' && c <= 'F') ||
+		c == 'x' || c == ',' || c == '-')
+		return (1);
+	return (0);
+}
+
 int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
 {
 	int	width;
@@ -28,14 +45,14 @@ int		ft_width_in_num_rep(char *buff, int fd, int *i, int len)
 		if (buff[*i] == '-')
 		{
 			if ((*i > 0 && buff[*i - 1] != ' ' && buff[*i - 1] != '\n') ||
-				buff[*i + 1] < '0' || buff[*i + 1] > '9')
+				!ft_allowed_char(buff[*i + 1]))
 				ft_bad_map(fd, buff);
 			++(*i);
 		}
-		else if (buff[*i] >= '0' && buff[*i] <= '9' && *i < len)
+		else if (ft_allowed_char(buff[*i]) && *i < len)
 		{
 			++width;
-			while (buff[*i] >= '0' && buff[*i] <= '9' && *i < len)
+			while (ft_allowed_char(buff[*i]) && *i < len)
 				++(*i);
 		}
 		else if (buff[*i] != ' ' && buff[*i] != '\n' && buff[*i])
@@ -90,6 +107,59 @@ char	*ft_get_char_map(int argc, char **argv, t_fdf *fdf)
 	close(fd);
 }
 
+int		ft_atoi_u16(char* str)
+{
+	int	len;
+	int	res;
+	int	factor;
+
+	len = ft_strlen(str);
+	res = 0;
+	factor = 1;
+	while (len--)
+	{
+		if (str[len] >= '0' && str[len] <= '9')
+			res += (int)(str[len] - '0') * factor;
+		else if (str[len] >= 'A' && str[len] <= 'F')
+			res += ((int)(str[len] - 'A') + 10) * factor;
+		factor *= 16;
+	}
+	return res;
+}
+
+int		ft_check_color(char* str)
+{
+	int	i;
+	
+	i = 0;
+	if (str[i] == '-')
+		++i;
+	while (str[i] >= '0' && str[i] <= '9')
+		++i;
+	if (!i)
+		return (CLR_ERROR);
+	if (i && !(str[i]))
+		return (NO_COLOR);
+	if (str[i] == ',' && str[i + 1] == '0' && str[i + 2] == 'x')
+	{
+		if (ft_strlen(&(str[i + 3])) != 6)
+			return (CLR_ERROR);
+		str[i] = '\0';
+		return (ft_atoi_u16(&(str[i + 3])));	
+	}
+	return (CLR_ERROR);
+}
+
+void	ft_color_error_render(t_map *map, char **s_map, char **t, t_pos *pos)
+{
+	if (pos->src_color == CLR_ERROR)
+	{
+		ft_free_string_arr(t);
+		ft_free_string_arr(s_map);
+		ft_bad_int_map(pos->y, map);
+	}
+}
+
 void	ft_include_int_map(char* c_map, t_map *map)
 {
 	char	**s_map;
@@ -99,8 +169,8 @@ void	ft_include_int_map(char* c_map, t_map *map)
 
 	s_map = ft_strsplit(c_map, '\n');
 	map->height = ft_get_height(c_map);
-	map->points = (t_pos**)malloc(sizeof(t_pos*) * map->height);
 	free(c_map);
+	map->points = (t_pos**)malloc(sizeof(t_pos*) * map->height);
 	i = -1;
 	while (++i < map->height)
 	{
@@ -108,7 +178,11 @@ void	ft_include_int_map(char* c_map, t_map *map)
 		map->points[i] = (t_pos*)malloc(sizeof(t_pos) * map->width);
 		j = -1;
 		while (++j < map->width)
+		{
 			ft_set_pos(&(map->points[i][j]), j, i, ft_atoi(t[j]));
+			map->points[i][j].src_color = ft_check_color(t[j]);
+			ft_color_error_render(map, s_map, t, &(map->points[i][j]));
+		}
 		ft_free_string_arr(t);
 	}
 	ft_free_string_arr(s_map);

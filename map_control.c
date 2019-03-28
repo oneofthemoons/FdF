@@ -22,8 +22,11 @@ void	ft_reset_current_map(t_fdf *fdf)
 	{
 		j = -1;
 		while (++j < fdf->c_map.width)
+		{
 			ft_set_pos(&(fdf->c_map.points[i][j]), fdf->s_map.points[i][j].x,
 				fdf->s_map.points[i][j].y, fdf->s_map.points[i][j].z);
+			fdf->c_map.points[i][j].src_color = fdf->s_map.points[i][j].src_color;
+		}
 	}
 }
 

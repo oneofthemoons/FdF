@@ -10,6 +10,8 @@
 # define GREEN 0x008000
 # define BROWN 0x964b00
 # define WHITE 0xFFFFFF
+# define CLR_ERROR -2
+# define NO_COLOR -1
 # include <mlx.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -36,6 +38,7 @@ typedef struct  		s_pos
 	int					y;
 	int					z;
 	int					color;
+	int					src_color;
 }       		        t_pos;
 
 typedef struct			s_fpos
