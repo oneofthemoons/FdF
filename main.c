@@ -256,6 +256,29 @@ void	ft_rotate_z(t_fdf *fdf)
 	}
 }
 
+void	ft_set_iso(t_fdf *fdf)
+{
+	int		i;
+	int		j;
+	int		x;
+	float	sn;
+	float	cs;
+
+	sn = sin(0.523599);
+	cs = cos(0.523599);
+	i = -1;
+	while (++i < fdf->c_map.height)
+	{
+		j = -1;
+		while (++j < fdf->c_map.width)
+		{
+			x = fdf->c_map.points[i][j].x;
+			fdf->c_map.points[i][j].x = (x - fdf->c_map.points[i][j].y) * cs;
+			fdf->c_map.points[i][j].y = (x + fdf->c_map.points[i][j].y) * sn - fdf->c_map.points[i][j].z;
+		}
+	}
+}
+
 void	ft_search_walls(t_fdf *fdf, t_walls *walls)
 {
 	int	i;
@@ -299,44 +322,71 @@ void	ft_central(t_fdf *fdf)
 	}
 }
 
+void	ft_str_instuct(t_fdf *fdf, char *str, int line)
+{
+	mlx_string_put(fdf->mlx_ptr, fdf->win_ptr, WIN_WIDTH / 48, WIN_HEIGHT - (WIN_HEIGHT / 3.5 - line * 20), 0xFFFAFA, str);
+}
+
+void	ft_instruction(t_fdf *fdf)
+{
+	ft_str_instuct(fdf, "Press:", -2);
+	ft_str_instuct(fdf, "ESC to exit", 0);
+	ft_str_instuct(fdf, "I to choose ISO projection", 1);
+	ft_str_instuct(fdf, "P to choose PARALLEL projection", 2);
+	ft_str_instuct(fdf, "F to pay respect", 3);
+	ft_str_instuct(fdf, "ARROW UP to zoom+", 4);
+	ft_str_instuct(fdf, "ARROW DOWN to zoom-", 5);
+	ft_str_instuct(fdf, "W/S to rotate in X axis (PARALLEL)", 6);
+	ft_str_instuct(fdf, "D/A to rotate in Z axis (PARALLEL)", 7);
+	ft_str_instuct(fdf, "Q/E to rotate in Y axis (PARALLEL)", 8);
+}
 
 int		ft_deal_key(int key, void *fdf)
 {
-	//printf("key: %d\n", key);
 	if (key == 53)
 		exit(0);
 	mlx_clear_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr);
 	ft_clear_image((t_fdf*)fdf);
-	if (key == 15)
+	if (key == 34)
+		((t_fdf*)fdf)->projection = ISO;
+	if (key == 35)
+		((t_fdf*)fdf)->projection = PARALLEL;
+	if (key == 15 && ((t_fdf*)fdf)->projection == PARALLEL)
 		ft_reset_fpos(&(((t_fdf*)fdf)->params.angle));
-	if (key == 13)
+	if (key == 13 && ((t_fdf*)fdf)->projection == PARALLEL)
 		((t_fdf*)fdf)->params.angle.x -= ANGLE;
-	if (key == 1)
+	if (key == 1 && ((t_fdf*)fdf)->projection == PARALLEL)
 		((t_fdf*)fdf)->params.angle.x += ANGLE;
-	if (key == 2)
+	if (key == 2 && ((t_fdf*)fdf)->projection == PARALLEL)
 		((t_fdf*)fdf)->params.angle.y += ANGLE;
-	if (key == 0)
+	if (key == 0 && ((t_fdf*)fdf)->projection == PARALLEL)
 		((t_fdf*)fdf)->params.angle.y -= ANGLE;
-	if (key == 14)
+	if (key == 14 && ((t_fdf*)fdf)->projection == PARALLEL)
 		((t_fdf*)fdf)->params.angle.z += ANGLE;
-	if (key == 12)
+	if (key == 12 && ((t_fdf*)fdf)->projection == PARALLEL)
 		((t_fdf*)fdf)->params.angle.z -= ANGLE;
 	if (key == 126)
 		ft_recalculate_points((t_fdf*)fdf, INCREASE);
 	if (key == 125)
 		ft_recalculate_points((t_fdf*)fdf, REDUCE);
 	if (key == 13 || key == 1 || key == 2 || key == 0 || key == 15
-		|| key == 12 || key == 14 || key == 125 || key == 126)
+		|| key == 12 || key == 14 || key == 125 || key == 126 || key == 34 || key == 35)
 	{
 		ft_reset_current_map((t_fdf*)fdf);
-		ft_rotate_x((t_fdf*)fdf);
-		ft_rotate_y((t_fdf*)fdf);
-		ft_rotate_z((t_fdf*)fdf);
+		if (((t_fdf*)fdf)->projection == PARALLEL)
+		{
+			ft_rotate_x((t_fdf*)fdf);
+			ft_rotate_y((t_fdf*)fdf);
+			ft_rotate_z((t_fdf*)fdf);
+		}
+		else if (((t_fdf*)fdf)->projection == ISO)
+			ft_set_iso((t_fdf*)fdf);
 		ft_central((t_fdf*)fdf);
 	}
 	ft_draw_points((t_fdf*)fdf);
 	ft_draw_cells((t_fdf*)fdf);
 	mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr, ((t_fdf*)fdf)->img.ptr, 0, 0);
+	ft_instruction((t_fdf*)fdf);
 	//printf("peak: %d, middle: %d, bottom: %d\n", ((t_fdf*)fdf)->params.peak_height, ((t_fdf*)fdf)->params.middle_height, ((t_fdf*)fdf)->params.bottom_height);
 	return (0);
 }
@@ -345,6 +395,7 @@ int		main(int argc, char **argv)
 {
 	t_fdf	fdf;
 
+	fdf.projection = PARALLEL;
 	fdf.c_map.points = NULL;
 	ft_create_maps(&fdf, argc, argv);
 	ft_reset_current_map(&fdf);
@@ -357,6 +408,7 @@ int		main(int argc, char **argv)
 	ft_draw_points(&fdf);
 	ft_draw_cells(&fdf);
 	mlx_put_image_to_window(fdf.mlx_ptr, fdf.win_ptr, fdf.img.ptr, 0, 0);
+	ft_instruction(&fdf);
     mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));
 	mlx_hook(fdf.win_ptr, 17, 0, ft_close, NULL);
     mlx_loop(fdf.mlx_ptr);

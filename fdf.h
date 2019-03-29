@@ -81,6 +81,11 @@ typedef struct			s_image
 	int					endian;
 }						t_image;
 
+typedef enum			e_projection
+{
+	PARALLEL,
+	ISO
+}						t_projection;
 
 typedef struct			s_fdf
 {
@@ -91,6 +96,7 @@ typedef struct			s_fdf
 	t_map				h_map;
 	t_params			params;
 	t_image				img;
+	t_projection		projection;
 }						t_fdf;
 
 typedef struct			s_line_color
