@@ -46,9 +46,23 @@ void	ft_put_pixel(t_fdf *fdf, int x, int y, int color)
 		pixel[i] = ((char*)(&clr))[i];
 }
 
-int ft_close(void *param)
+int ft_close(void *fdf)
 {
-	(void)param;
+	int	i;
+
+	i = -1;
+	while (++i < ((t_fdf*)fdf)->s_map.height)
+	{
+		free(((t_fdf*)fdf)->c_map.points[i]);
+		free(((t_fdf*)fdf)->h_map.points[i]);
+		free(((t_fdf*)fdf)->s_map.points[i]);
+	}
+	free(((t_fdf*)fdf)->c_map.points);
+	free(((t_fdf*)fdf)->s_map.points);
+	free(((t_fdf*)fdf)->h_map.points);
+	mlx_destroy_image(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->respect.ptr);
+	mlx_destroy_image(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->img.ptr);
+	mlx_destroy_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr);
 	exit(0);
 	return (0);
 }
@@ -186,7 +200,6 @@ void	ft_draw_cells(t_fdf *fdf)
 				color.idx_to.y = iter.y;
 				ft_draw_line(fdf, from, to);
 			}
-			//printf("from_color: %d, to_color: %d\n", from.color, to.color);
 		}
 	}
 }
@@ -341,53 +354,75 @@ void	ft_instruction(t_fdf *fdf)
 	ft_str_instuct(fdf, "Q/E to rotate in Y axis (PARALLEL)", 8);
 }
 
-int		ft_deal_key(int key, void *fdf)
+void	ft_hook_parallel(int key, void *fdf)
 {
-	if (key == 53)
-		exit(0);
-	mlx_clear_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr);
-	ft_clear_image((t_fdf*)fdf);
+	if (key == 15)
+		ft_reset_fpos(&(((t_fdf*)fdf)->params.angle));
+	if (key == 13)
+		((t_fdf*)fdf)->params.angle.x -= ANGLE;
+	if (key == 1)
+		((t_fdf*)fdf)->params.angle.x += ANGLE;
+	if (key == 2)
+		((t_fdf*)fdf)->params.angle.y += ANGLE;
+	if (key == 0)
+		((t_fdf*)fdf)->params.angle.y -= ANGLE;
+	if (key == 14)
+		((t_fdf*)fdf)->params.angle.z += ANGLE;
+	if (key == 12)
+		((t_fdf*)fdf)->params.angle.z -= ANGLE;
+}
+
+void	ft_render_parallel(void *fdf)
+{
+	if (((t_fdf*)fdf)->projection == PARALLEL)
+	{
+			ft_rotate_x((t_fdf*)fdf);
+			ft_rotate_y((t_fdf*)fdf);
+			ft_rotate_z((t_fdf*)fdf);
+	}
+}
+
+void	ft_hook_service(int key, void *fdf)
+{
+	if (key == 53 || ((t_fdf*)fdf)->is_respect)
+		ft_close(fdf);
 	if (key == 34)
 		((t_fdf*)fdf)->projection = ISO;
 	if (key == 35)
 		((t_fdf*)fdf)->projection = PARALLEL;
-	if (key == 15 && ((t_fdf*)fdf)->projection == PARALLEL)
-		ft_reset_fpos(&(((t_fdf*)fdf)->params.angle));
-	if (key == 13 && ((t_fdf*)fdf)->projection == PARALLEL)
-		((t_fdf*)fdf)->params.angle.x -= ANGLE;
-	if (key == 1 && ((t_fdf*)fdf)->projection == PARALLEL)
-		((t_fdf*)fdf)->params.angle.x += ANGLE;
-	if (key == 2 && ((t_fdf*)fdf)->projection == PARALLEL)
-		((t_fdf*)fdf)->params.angle.y += ANGLE;
-	if (key == 0 && ((t_fdf*)fdf)->projection == PARALLEL)
-		((t_fdf*)fdf)->params.angle.y -= ANGLE;
-	if (key == 14 && ((t_fdf*)fdf)->projection == PARALLEL)
-		((t_fdf*)fdf)->params.angle.z += ANGLE;
-	if (key == 12 && ((t_fdf*)fdf)->projection == PARALLEL)
-		((t_fdf*)fdf)->params.angle.z -= ANGLE;
+	if (((t_fdf*)fdf)->projection == PARALLEL)
+		ft_hook_parallel(key, fdf);
 	if (key == 126)
 		ft_recalculate_points((t_fdf*)fdf, INCREASE);
 	if (key == 125)
 		ft_recalculate_points((t_fdf*)fdf, REDUCE);
-	if (key == 13 || key == 1 || key == 2 || key == 0 || key == 15
-		|| key == 12 || key == 14 || key == 125 || key == 126 || key == 34 || key == 35)
+	if (key == 3)
+		((t_fdf*)fdf)->is_respect = 1;
+}
+
+int		ft_deal_key(int key, void *fdf)
+{
+	mlx_clear_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr);
+	ft_clear_image((t_fdf*)fdf);
+	ft_hook_service(key, fdf);
+	if ((key >= 12 && key <= 15) || key == 1 || key == 2 || key == 0 ||
+		key == 125 || key == 126 || key == 34 || key == 35)
 	{
 		ft_reset_current_map((t_fdf*)fdf);
-		if (((t_fdf*)fdf)->projection == PARALLEL)
-		{
-			ft_rotate_x((t_fdf*)fdf);
-			ft_rotate_y((t_fdf*)fdf);
-			ft_rotate_z((t_fdf*)fdf);
-		}
-		else if (((t_fdf*)fdf)->projection == ISO)
+		ft_render_parallel(fdf);
+		if (((t_fdf*)fdf)->projection == ISO)
 			ft_set_iso((t_fdf*)fdf);
 		ft_central((t_fdf*)fdf);
+	}
+	if (((t_fdf*)fdf)->is_respect)
+	{
+		mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr, ((t_fdf*)fdf)->respect.ptr, WIN_WIDTH / 2 - 640, WIN_HEIGHT / 2 - 360);
+		return (0);
 	}
 	ft_draw_points((t_fdf*)fdf);
 	ft_draw_cells((t_fdf*)fdf);
 	mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr, ((t_fdf*)fdf)->img.ptr, 0, 0);
 	ft_instruction((t_fdf*)fdf);
-	//printf("peak: %d, middle: %d, bottom: %d\n", ((t_fdf*)fdf)->params.peak_height, ((t_fdf*)fdf)->params.middle_height, ((t_fdf*)fdf)->params.bottom_height);
 	return (0);
 }
 
@@ -403,6 +438,8 @@ int		main(int argc, char **argv)
     fdf.mlx_ptr = mlx_init();
     fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
 	ft_calculate_params(&fdf);
+	fdf.is_respect = 0;
+	fdf.respect.ptr = mlx_xpm_file_to_image(fdf.mlx_ptr, "./drawable/respect.xpm", &(fdf.respect.width), &(fdf.respect.height));
 	ft_central(&fdf);
 	ft_create_image(&fdf);
 	ft_draw_points(&fdf);
@@ -410,6 +447,6 @@ int		main(int argc, char **argv)
 	mlx_put_image_to_window(fdf.mlx_ptr, fdf.win_ptr, fdf.img.ptr, 0, 0);
 	ft_instruction(&fdf);
     mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));
-	mlx_hook(fdf.win_ptr, 17, 0, ft_close, NULL);
+	mlx_hook(fdf.win_ptr, 17, 0, ft_close, (void*)(&fdf));
     mlx_loop(fdf.mlx_ptr);
 }

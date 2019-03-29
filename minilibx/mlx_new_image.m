@@ -93,13 +93,11 @@ void    mlx_put_image_to_window(mlx_ptr_t *mlx_ptr, mlx_win_list_t *win_ptr, mlx
   win_ptr->nb_flush ++;
 }
 
-// assume here 32bpp little endian
-
 char    *mlx_get_data_addr(mlx_img_list_t *img_ptr, int *bits_per_pixel, int *size_line, int *endian)
 {
   *bits_per_pixel = UNIQ_BPP*8;
   *size_line = img_ptr->width*UNIQ_BPP;
-  *endian = 0; // little endian for now on mac-intel
+  *endian = 0;
   return (img_ptr->buffer);
 }
 
@@ -127,7 +125,6 @@ int mlx_string_put(mlx_ptr_t *mlx_ptr, mlx_win_list_t *win_ptr, int x, int y, in
 	{
 	  gX = (FONT_WIDTH+2)*(*string-32);
 	  gY = 0;
-	  //      printf("put char %c pos %d %d\n", *string, gX, gY);
 	  [(id)(win_ptr->winid) mlx_gl_draw_font:mlx_ptr->font andCtx:imgctx andX:x andY:y andColor:color glyphX:gX glyphY:gY];
 	  x += FONT_WIDTH;
 	}

@@ -2,6 +2,6 @@
 
 void	ft_print_error(char* strerr)
 {
-	printf("%s", strerr); // deb to ft_putstr
+	ft_putstr(strerr);
 	exit(EXIT_FAILURE);
 }

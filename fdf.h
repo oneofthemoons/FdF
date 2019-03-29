@@ -1,7 +1,7 @@
 #ifndef FDF_H
 # define FDF_H
-# define WIN_HEIGHT 720
-# define WIN_WIDTH 1280
+# define WIN_HEIGHT 1080
+# define WIN_WIDTH 1920
 # define PIXEL_RANGE 1
 # define BUFF_FDF 4096
 # define ANGLE 0.05
@@ -87,6 +87,14 @@ typedef enum			e_projection
 	ISO
 }						t_projection;
 
+typedef struct			s_respect
+{
+	void				*ptr;
+	int					width;
+	int					height;
+}						t_respect;
+
+
 typedef struct			s_fdf
 {
 	void				*mlx_ptr;
@@ -96,6 +104,8 @@ typedef struct			s_fdf
 	t_map				h_map;
 	t_params			params;
 	t_image				img;
+	t_respect			respect;
+	int					is_respect;
 	t_projection		projection;
 }						t_fdf;
 
