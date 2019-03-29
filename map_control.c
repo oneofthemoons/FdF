@@ -52,7 +52,7 @@ void	ft_create_maps(t_fdf *fdf, int argc, char **argv)
 	ft_create_sub_map(&(fdf->h_map), &(fdf->s_map));
 }
 
-void	ft_recalculate_points(t_fdf *fdf, int action)
+int		ft_precalculate(t_fdf *fdf, int action)
 {
 	int	i;
 	int	j;
@@ -62,7 +62,7 @@ void	ft_recalculate_points(t_fdf *fdf, int action)
 	if (fdf->params.cell_range > WIN_WIDTH / 2)
 		fdf->params.cell_range = WIN_WIDTH / 2;
 	if ((fdf->params.cell_range == 3 && action == REDUCE) || (fdf->params.cell_range == WIN_WIDTH / 2 && action == INCREASE))
-		return ;
+		return (1);
 	i = -1;
 	while (++i < fdf->s_map.height)
 	{
@@ -74,6 +74,16 @@ void	ft_recalculate_points(t_fdf *fdf, int action)
 		fdf->params.cell_range = (fdf->params.cell_range * 3) / 4;
 	else if (action == INCREASE)
 		fdf->params.cell_range = (fdf->params.cell_range * 4) / 3;
+	return (0);
+}
+
+void	ft_recalculate_points(t_fdf *fdf, int action)
+{
+	int	i;
+	int	j;
+
+	if (ft_precalculate(fdf, action))
+		return ;
 	i = -1;
 	while (++i < fdf->s_map.height)
 	{

@@ -113,6 +113,22 @@ int		ft_get_line_color(t_pos from, t_pos to, t_pos2 current)
 	return (color);
 }
 
+void	ft_set_start_current_d_pos(t_pos2 *current, t_pos2 *d, t_pos *to, t_pos *from)
+{
+	current->x = from->x;
+	current->y = from->y;
+	d->y = to->y - from->y;
+	d->x = from->x - to->x;
+}
+
+void	ft_start_sign(t_pos2 *sign_d, t_pos2 *d, int *sign, int *f)
+{
+	sign_d->y = d->y < 0 ? -1 : 1;
+	sign_d->x = d->x < 0 ? -1 : 1;
+	*sign = abs(d->y) <= abs(d->x);
+	*f = 0;
+}
+
 void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
 {
 	t_pos2	d;
@@ -121,14 +137,8 @@ void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
 	int	f;
 	int	sign;
 
-	current.x = from.x;
-	current.y = from.y;
-	d.y = to.y - from.y;
-	d.x = from.x - to.x;
-	sign_d.y = d.y < 0 ? -1 : 1;
-	sign_d.x = d.x < 0 ? -1 : 1;
-	f = 0;
-	sign = abs(d.y) <= abs(d.x);
+	ft_set_start_current_d_pos(&current, &d, &to, &from);
+	ft_start_sign(&sign_d, &d, &sign, &f);
 	while (current.x != to.x || current.y != to.y)
 	{
 		f += sign ? d.y * sign_d.y : d.x * sign_d.x;
@@ -170,11 +180,15 @@ void	ft_draw_points(t_fdf *fdf)
 	}
 }
 
+// void	ft_set_color_line_params(t_fdf *fdf, t_pos2 *iter, t_line_color *color, int right)
+// {
+// 	color->idx_to.x = iter->x + right ? 1 : 0;
+// 	color->idx_to.y = iter->y + right ? 0 : 1;
+// }
+
 void	ft_draw_cells(t_fdf *fdf)
 {
 	t_pos2			iter;
-	t_pos			from;
-	t_pos			to;
 	t_line_color	color;
 
 	iter.y = -1;
@@ -183,22 +197,16 @@ void	ft_draw_cells(t_fdf *fdf)
 		iter.x = -1;
 		while (++(iter.x) < fdf->c_map.width)
 		{
-			from = fdf->c_map.points[iter.y][iter.x];
+			color.from = fdf->c_map.points[iter.y][iter.x];
 			if (iter.y < fdf->c_map.height - 1)
 			{
-				to = fdf->c_map.points[iter.y + 1][iter.x];
-				color.idx_from = iter;
-				color.idx_to.x = iter.x;
-				color.idx_to.y = iter.y + 1;
-				ft_draw_line(fdf, from, to);
+				color.to = fdf->c_map.points[iter.y + 1][iter.x];
+				ft_draw_line(fdf, color.from, color.to);
 			}
 			if (iter.x < fdf->c_map.width - 1)
 			{
-				to = fdf->c_map.points[iter.y][iter.x + 1];
-				color.idx_from = iter;
-				color.idx_to.x = iter.x + 1;
-				color.idx_to.y = iter.y;
-				ft_draw_line(fdf, from, to);
+				color.to = fdf->c_map.points[iter.y][iter.x + 1];
+				ft_draw_line(fdf, color.from, color.to);
 			}
 		}
 	}

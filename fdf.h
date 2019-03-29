@@ -111,8 +111,8 @@ typedef struct			s_fdf
 
 typedef struct			s_line_color
 {
-	t_pos2				idx_from;
-	t_pos2				idx_to;
+	t_pos				from;
+	t_pos				to;
 }						t_line_color;
 
 void					ft_print_error(char* strerr);
