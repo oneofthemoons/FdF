@@ -1,5 +1,16 @@
-#include "fdf.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrickard <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/03/30 15:47:09 by hrickard          #+#    #+#             */
+/*   Updated: 2019/03/30 15:47:11 by hrickard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "fdf.h"
 
 void	ft_free_string_arr(char **arr)
 {
@@ -9,14 +20,4 @@ void	ft_free_string_arr(char **arr)
 	while (arr[++i])
 		free(arr[i]);
 	free(arr);
-}
-
-void	ft_free_map(t_map *map)
-{
-	int	i;
-
-	i = -1;
-	while (++i < map->height)
-		free(map->points[i]);
-	free(map->points);
 }

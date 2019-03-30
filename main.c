@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrickard <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/03/30 15:43:50 by hrickard          #+#    #+#             */
+/*   Updated: 2019/03/30 15:44:00 by hrickard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
 void	ft_hook_parallel(int key, void *fdf)
@@ -22,9 +34,9 @@ void	ft_render_parallel(void *fdf)
 {
 	if (((t_fdf*)fdf)->projection == PARALLEL)
 	{
-			ft_rotate_x((t_fdf*)fdf);
-			ft_rotate_y((t_fdf*)fdf);
-			ft_rotate_z((t_fdf*)fdf);
+		ft_rotate_x((t_fdf*)fdf);
+		ft_rotate_y((t_fdf*)fdf);
+		ft_rotate_z((t_fdf*)fdf);
 	}
 }
 
@@ -62,12 +74,15 @@ int		ft_deal_key(int key, void *fdf)
 	}
 	if (((t_fdf*)fdf)->is_respect)
 	{
-		mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr, ((t_fdf*)fdf)->respect.ptr, WIN_WIDTH / 2 - 640, WIN_HEIGHT / 2 - 360);
+		mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr,
+			((t_fdf*)fdf)->respect.ptr, WIN_WIDTH / 2 - 640,
+			WIN_HEIGHT / 2 - 360);
 		return (0);
 	}
 	ft_draw_points((t_fdf*)fdf);
 	ft_draw_cells((t_fdf*)fdf);
-	mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr, ((t_fdf*)fdf)->win_ptr, ((t_fdf*)fdf)->img.ptr, 0, 0);
+	mlx_put_image_to_window(((t_fdf*)fdf)->mlx_ptr,
+		((t_fdf*)fdf)->win_ptr, ((t_fdf*)fdf)->img.ptr, 0, 0);
 	ft_instruction((t_fdf*)fdf);
 	return (0);
 }
@@ -82,18 +97,20 @@ int		main(int argc, char **argv)
 	ft_create_maps(&fdf, argc, argv);
 	ft_reset_current_map(&fdf);
 	ft_init_h_map(&fdf);
-    fdf.mlx_ptr = mlx_init();
-    fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT, "PUPA_WIN_A");
+	fdf.mlx_ptr = mlx_init();
+	fdf.win_ptr = mlx_new_window(fdf.mlx_ptr, WIN_WIDTH, WIN_HEIGHT,
+		"PUPA_WIN_A");
 	ft_calculate_params(&fdf);
 	fdf.is_respect = 0;
-	fdf.respect.ptr = mlx_xpm_file_to_image(fdf.mlx_ptr, "./drawable/respect.xpm", &(fdf.respect.width), &(fdf.respect.height));
+	fdf.respect.ptr = mlx_xpm_file_to_image(fdf.mlx_ptr,
+		"./drawable/respect.xpm", &(fdf.respect.width), &(fdf.respect.height));
 	ft_central(&fdf);
 	ft_create_image(&fdf);
 	ft_draw_points(&fdf);
 	ft_draw_cells(&fdf);
 	mlx_put_image_to_window(fdf.mlx_ptr, fdf.win_ptr, fdf.img.ptr, 0, 0);
 	ft_instruction(&fdf);
-    mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));
+	mlx_key_hook(fdf.win_ptr, ft_deal_key, (void*)(&fdf));
 	mlx_hook(fdf.win_ptr, 17, 0, ft_close, (void*)(&fdf));
-    mlx_loop(fdf.mlx_ptr);
+	mlx_loop(fdf.mlx_ptr);
 }

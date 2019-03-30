@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   support.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrickard <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/03/30 15:49:31 by hrickard          #+#    #+#             */
+/*   Updated: 2019/03/30 15:49:35 by hrickard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
 void	ft_init_walls(t_walls *walls)
@@ -65,8 +77,10 @@ void	ft_central(t_fdf *fdf)
 		j = -1;
 		while (++j < fdf->c_map.width)
 		{
-			fdf->c_map.points[i][j].x += (WIN_WIDTH - walls.right + walls.left) / 2 - walls.left;
-			fdf->c_map.points[i][j].y += (WIN_HEIGHT - walls.down + walls.top) / 2 - walls.top;
+			fdf->c_map.points[i][j].x += (WIN_WIDTH - walls.right +
+				walls.left) / 2 - walls.left;
+			fdf->c_map.points[i][j].y += (WIN_HEIGHT - walls.down +
+				walls.top) / 2 - walls.top;
 		}
 	}
 }

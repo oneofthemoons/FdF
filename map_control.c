@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_control.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrickard <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/03/30 15:47:56 by hrickard          #+#    #+#             */
+/*   Updated: 2019/03/30 15:47:58 by hrickard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
 void	ft_create_sub_map(t_map *c_map, const t_map *s_map)
@@ -10,24 +22,6 @@ void	ft_create_sub_map(t_map *c_map, const t_map *s_map)
 	i = -1;
 	while (++i < c_map->height)
 		c_map->points[i] = (t_pos*)malloc(sizeof(t_pos) * c_map->width);
-}
-
-void	ft_reset_current_map(t_fdf *fdf)
-{
-	int	i;
-	int	j;
-
-	i = -1;
-	while (++i < fdf->c_map.height)
-	{
-		j = -1;
-		while (++j < fdf->c_map.width)
-		{
-			ft_set_pos(&(fdf->c_map.points[i][j]), fdf->s_map.points[i][j].x,
-				fdf->s_map.points[i][j].y, fdf->s_map.points[i][j].z);
-			fdf->c_map.points[i][j].src_color = fdf->s_map.points[i][j].src_color;
-		}
-	}
 }
 
 void	ft_init_h_map(t_fdf *fdf)
@@ -52,16 +46,21 @@ void	ft_create_maps(t_fdf *fdf, int argc, char **argv)
 	ft_create_sub_map(&(fdf->h_map), &(fdf->s_map));
 }
 
+void	ft_params_init(t_fdf *fdf)
+{
+	fdf->params.cell_range = (90 * WIN_WIDTH / 100) / fdf->s_map.width;
+	fdf->params.left = -(fdf->s_map.width * fdf->params.cell_range) / 2;
+	fdf->params.top = -(fdf->s_map.height * fdf->params.cell_range) / 2;
+	fdf->params.peak_height = fdf->h_map.points[0][0].z;
+	fdf->params.bottom_height = fdf->h_map.points[0][0].z;
+}
+
 void	ft_calculate_params(t_fdf *fdf)
 {
 	int	i;
 	int	j;
 
-	fdf->params.cell_range = (WIN_WIDTH * 90 / 100) / fdf->s_map.width;
-	fdf->params.left = -(fdf->s_map.width * fdf->params.cell_range) / 2;
-	fdf->params.top = -(fdf->s_map.height * fdf->params.cell_range) / 2;
-	fdf->params.peak_height = fdf->h_map.points[0][0].z;
-	fdf->params.bottom_height = fdf->h_map.points[0][0].z;
+	ft_params_init(fdf);
 	i = -1;
 	while (++i < fdf->s_map.height)
 	{
@@ -72,11 +71,14 @@ void	ft_calculate_params(t_fdf *fdf)
 				fdf->params.peak_height = fdf->h_map.points[i][j].z;
 			if (fdf->h_map.points[i][j].z < fdf->params.bottom_height)
 				fdf->params.bottom_height = fdf->h_map.points[i][j].z;
-			fdf->s_map.points[i][j].x = fdf->params.left + fdf->params.cell_range * j;
-			fdf->s_map.points[i][j].y = fdf->params.top + fdf->params.cell_range * i;
+			fdf->s_map.points[i][j].x = fdf->params.left +
+				fdf->params.cell_range * j;
+			fdf->s_map.points[i][j].y = fdf->params.top +
+				fdf->params.cell_range * i;
 			fdf->s_map.points[i][j].z *= fdf->params.cell_range;
 		}
 	}
-	fdf->params.middle_height = (fdf->params.peak_height + fdf->params.bottom_height) / 2;
+	fdf->params.mid_height = (fdf->params.peak_height +
+		fdf->params.bottom_height) / 2;
 	ft_reset_current_map(fdf);
 }

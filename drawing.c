@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   drawing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrickard <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/03/30 15:46:50 by hrickard          #+#    #+#             */
+/*   Updated: 2019/03/30 15:46:51 by hrickard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
-void	ft_set_start_current_d_pos(t_pos2 *current, t_pos2 *d, t_pos *to, t_pos *from)
+void	ft_set_start_current_d_pos(t_pos2 *current, t_pos2 *d,
+			t_pos *to, t_pos *from)
 {
 	current->x = from->x;
 	current->y = from->y;
@@ -20,28 +33,28 @@ void	ft_draw_line(t_fdf *fdf, t_pos from, t_pos to)
 {
 	t_pos2	d;
 	t_pos2	sign_d;
-	t_pos2	current;
-	int	f;
-	int	sign;
+	t_pos2	cur;
+	int		f;
+	int		sign;
 
-	ft_set_start_current_d_pos(&current, &d, &to, &from);
+	ft_set_start_current_d_pos(&cur, &d, &to, &from);
 	ft_start_sign(&sign_d, &d, &sign, &f);
-	while (current.x != to.x || current.y != to.y)
+	while (cur.x != to.x || cur.y != to.y)
 	{
 		f += sign ? d.y * sign_d.y : d.x * sign_d.x;
 		if (f > 0)
 		{
 			f -= sign ? d.x * sign_d.x : d.y * sign_d.y;
 			if (sign)
-				current.y += sign_d.y;
+				cur.y += sign_d.y;
 			else
-				current.x -= sign_d.x;
+				cur.x -= sign_d.x;
 		}
 		if (sign)
-			current.x -= sign_d.x;
+			cur.x -= sign_d.x;
 		else
-			current.y += sign_d.y;
-		ft_put_pixel(fdf, current.x, current.y, ft_get_line_color(from, to, current));
+			cur.y += sign_d.y;
+		ft_put_pixel(fdf, cur.x, cur.y, ft_get_line_color(from, to, cur));
 	}
 }
 
@@ -59,7 +72,8 @@ void	ft_draw_points(t_fdf *fdf)
 		{
 			pos.x = fdf->c_map.points[i][j].x;
 			pos.y = fdf->c_map.points[i][j].y;
-			fdf->c_map.points[i][j].color = fdf->c_map.points[i][j].src_color == -1 ?
+			fdf->c_map.points[i][j].color =
+				fdf->c_map.points[i][j].src_color == -1 ?
 				ft_get_point_color(fdf, fdf->h_map.points[i][j].z) :
 				fdf->c_map.points[i][j].src_color;
 			ft_put_pixel(fdf, pos.x, pos.y, fdf->c_map.points[i][j].color);
